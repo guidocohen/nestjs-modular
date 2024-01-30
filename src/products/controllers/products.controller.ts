@@ -15,9 +15,9 @@ import {
 
 import { Response } from 'express';
 import { ParseIntPipe } from '../../common/parse-int.pipe';
-import { CreateProductDto, UpdateProductDto } from '../dtos/products.dtos';
+import { CreateProductDto, UpdateProductDto } from '../dtos/products.dto';
 
-import { ProductsService } from '../services/products.service';
+import { ProductsService } from './../services/products.service';
 
 @Controller('products')
 export class ProductsController {
