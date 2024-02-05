@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsPositive,
 } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateProductDto {
   @IsString()
@@ -25,6 +25,7 @@ export class CreateProductDto {
   @IsNotEmpty()
   readonly stock: number;
 
+  @ApiProperty({ description: 'Valid URL of the product image' })
   @IsUrl()
   @IsNotEmpty()
   readonly image: string;
