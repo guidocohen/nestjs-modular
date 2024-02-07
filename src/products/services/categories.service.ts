@@ -1,24 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 import { Category } from '../entities/category.entity';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 
 @Injectable()
 export class CategoriesService {
-  private counterId = 1;
-  private categories: Category[] = [
-    {
-      id: 1,
-      name: 'Category 1',
-    },
-  ];
+  constructor(
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
+  ) {}
 
   findAll() {
-    return this.categories;
+    return this.categoryModel.find().exec();
   }
 
-  findOne(id: number) {
-    const category = this.categories.find((item) => item.id === id);
+  async findOne(id: string) {
+    const category = await this.categoryModel.findById(id).exec();
     if (!category) {
       throw new NotFoundException(`Category #${id} not found`);
     }
@@ -26,31 +24,27 @@ export class CategoriesService {
   }
 
   create(data: CreateCategoryDto) {
-    this.counterId = this.counterId + 1;
-    const newCategory = {
-      id: this.counterId,
-      ...data,
-    };
-    this.categories.push(newCategory);
-    return newCategory;
+    const newCategory = new this.categoryModel(data);
+    return newCategory.save();
   }
 
-  update(id: number, changes: UpdateCategoryDto) {
-    const category = this.findOne(id);
-    const index = this.categories.findIndex((item) => item.id === id);
-    this.categories[index] = {
-      ...category,
-      ...changes,
-    };
-    return this.categories[index];
-  }
-
-  remove(id: number) {
-    const index = this.categories.findIndex((item) => item.id === id);
-    if (index === -1) {
+  async update(id: string, changes: UpdateCategoryDto) {
+    const updatedCategory = await this.categoryModel
+      .findByIdAndUpdate(id, changes, { new: true })
+      .exec();
+    if (!updatedCategory) {
       throw new NotFoundException(`Category #${id} not found`);
     }
-    this.categories.splice(index, 1);
+    return updatedCategory;
+  }
+
+  async remove(id: string) {
+    const deletedCategory = await this.categoryModel
+      .findByIdAndDelete(id)
+      .exec();
+    if (!deletedCategory) {
+      throw new NotFoundException(`Category #${id} not found`);
+    }
     return true;
   }
 }
