@@ -26,7 +26,7 @@ export class UsersService {
   findAll() {
     const apiKey = this.configServcie.get('API_KEY');
     console.log('🚀 ~ UsersService ~ findAll ~ apiKey:', apiKey);
-    const dbName = this.configServcie.get('DB_NAME');
+    const dbName = this.configServcie.get('MONGO_DB');
     console.log('🚀 ~ UsersService ~ findAll ~ dbName:', dbName);
     return this.users;
   }
