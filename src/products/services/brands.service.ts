@@ -9,8 +9,8 @@ import { CreateBrandDto, UpdateBrandDto } from '../dtos/brand.dto';
 export class BrandsService {
   constructor(@InjectModel(Brand.name) private brandModel: Model<Brand>) {}
 
-  findAll() {
-    return this.brandModel.find().exec();
+  async findAll() {
+    return await this.brandModel.find().exec();
   }
 
   async findOne(id: string) {
@@ -21,15 +21,17 @@ export class BrandsService {
     return brand;
   }
 
-  create(data: CreateBrandDto) {
-    const newBrand = new this.brandModel(data);
-    return newBrand.save();
+  async create(data: CreateBrandDto) {
+    const newBrand = await this.brandModel.create(data);
+    return newBrand;
   }
 
   async update(id: string, changes: UpdateBrandDto) {
     const updatedBrand = await this.brandModel
       .findByIdAndUpdate(id, changes, { new: true })
       .exec();
+    // new: true returns the updated document
+    // set: changes updates the fields that are in the changes object
     if (!updatedBrand) {
       throw new NotFoundException(`Brand #${id} not found`);
     }
@@ -37,8 +39,8 @@ export class BrandsService {
   }
 
   async remove(id: string) {
-    const deletedBrand = await this.brandModel.findByIdAndDelete(id).exec();
-    if (!deletedBrand) {
+    const brand = await this.brandModel.findByIdAndDelete(id).exec();
+    if (!brand) {
       throw new NotFoundException(`Brand #${id} not found`);
     }
     return true;

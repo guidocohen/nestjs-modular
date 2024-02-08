@@ -29,7 +29,7 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({ summary: 'List of products' })
-  getProducts(@Query() params: FilterProductsDto) {
+  findAll(@Query() params: FilterProductsDto) {
     return this.productsService.findAll(params);
   }
 

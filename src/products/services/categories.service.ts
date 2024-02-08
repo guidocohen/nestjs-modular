@@ -11,8 +11,8 @@ export class CategoriesService {
     @InjectModel(Category.name) private categoryModel: Model<Category>,
   ) {}
 
-  findAll() {
-    return this.categoryModel.find().exec();
+  async findAll() {
+    return await this.categoryModel.find().exec();
   }
 
   async findOne(id: string) {
@@ -23,15 +23,17 @@ export class CategoriesService {
     return category;
   }
 
-  create(data: CreateCategoryDto) {
-    const newCategory = new this.categoryModel(data);
-    return newCategory.save();
+  async create(data: CreateCategoryDto) {
+    const newCategory = await this.categoryModel.create(data);
+    return newCategory;
   }
 
   async update(id: string, changes: UpdateCategoryDto) {
     const updatedCategory = await this.categoryModel
       .findByIdAndUpdate(id, changes, { new: true })
       .exec();
+    // new: true returns the updated document
+    // set: changes updates the fields that are in the changes object
     if (!updatedCategory) {
       throw new NotFoundException(`Category #${id} not found`);
     }
@@ -39,10 +41,8 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    const deletedCategory = await this.categoryModel
-      .findByIdAndDelete(id)
-      .exec();
-    if (!deletedCategory) {
+    const category = await this.categoryModel.findByIdAndDelete(id).exec();
+    if (!category) {
       throw new NotFoundException(`Category #${id} not found`);
     }
     return true;
