@@ -11,7 +11,7 @@ import { Order } from '../entities/order.entity';
 import { CreateOrderDto, UpdateOrderDto } from '../dtos/order.dto';
 import { Product } from 'src/products/entities/product.entity';
 import { ProductsService } from 'src/products/services/products.service';
-import { Brand } from 'src/products/entities/brand.entity';
+const locales = 'es-AR';
 
 @Injectable()
 export class OrdersService {
@@ -42,23 +42,23 @@ export class OrdersService {
     return order;
   }
 
-  async calculateTotalPrice(data: CreateOrderDto): Promise<number> {
-    const products = await this.productService.findByIds(data.products);
-    if (products.length !== data.products.length) {
+  async calculateTotalPrice(stringProducts) {
+    const dbProducts = await this.productService.findByIds(stringProducts);
+    if (dbProducts.length < stringProducts.length) {
       throw new NotFoundException('One or more products not found');
     }
 
-    const totalPrice = products.reduce((c, prod) => c + prod.price, 0);
+    const totalPrice = dbProducts.reduce((c, prod) => c + prod.price, 0);
     return totalPrice;
   }
 
   async create(data: CreateOrderDto) {
-    const totalPrice = await this.calculateTotalPrice(data);
+    const totalPrice = await this.calculateTotalPrice(data.products);
     const newOrder = await this.orderModel.create({
       ...data,
       totalPrice,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date(new Date().toLocaleString()),
+      updatedAt: new Date(new Date().toLocaleString()),
     });
     return newOrder;
   }
@@ -67,7 +67,7 @@ export class OrdersService {
     const updatedOrder = await this.orderModel
       .findByIdAndUpdate(
         id,
-        { $set: { ...changes, updatedAt: new Date() } },
+        { $set: { ...changes, updatedAt: new Date().toLocaleTimeString() } },
         { new: true },
       )
       .populate('customer')
@@ -81,11 +81,125 @@ export class OrdersService {
     return updatedOrder;
   }
 
+  // TODO: Validate if products exists & implement quantity
+  // TODO: Validate TimeZone
+  async addProducts(orderId: string, productIds: string[]) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException(`Order #${orderId} not found`);
+    }
+
+    const products = Array.from(new Set([...order.products, ...productIds]));
+    if (products.length === order.products.length) {
+      throw new NotFoundException('The products are already in the order');
+    }
+    const totalPrice = await this.calculateTotalPrice(products);
+
+    const updatedOrder = await this.orderModel
+      .findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            products,
+            totalPrice,
+            updatedAt: new Date().toLocaleString(),
+          },
+        },
+        { new: true },
+      )
+      .populate('customer')
+      .populate({
+        path: 'products',
+        model: Product.name,
+      });
+    return updatedOrder;
+  }
+
+  /*
+  async addProducts(orderId: string, productIds: string[]) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException(`Order #${orderId} not found`);
+    }
+
+    const products = await this.productService.findByIds(productIds);
+    if (products.length !== productIds.length) {
+      throw new NotFoundException('One or more products not found');
+    }
+
+    products.forEach((product) => {
+      const existingProduct = order.products.find(
+        (p) => p.productId === product._id.toString(),
+      );
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        order.products.push({ productId: product._id.toString(), quantity: 1 });
+      }
+    });
+
+    const totalPrice = await this.calculateTotalPrice(
+      order.products.map((p) => p.productId),
+    );
+
+    const updatedOrder = await this.orderModel
+      .findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            products: order.products,
+            totalPrice,
+            updatedAt: new Date().toLocaleTimeString(),
+          },
+        },
+        { new: true },
+      )
+      .populate('customer')
+      .populate({
+        path: 'products.productId',
+        model: Product.name,
+      });
+
+    return updatedOrder;
+  }
+  */
+
   async remove(id: string) {
     const order = await this.orderModel.findByIdAndDelete(id);
     if (!order) {
       throw new NotFoundException(`Order #${id} not found`);
     }
     return true;
+  }
+
+  // TODO: Validate TimeZone
+  async removeProduct(orderId: string, productId: string) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new NotFoundException(`Order #${orderId} not found`);
+    }
+    order.products.pull(productId);
+    const totalPrice = await this.calculateTotalPrice(order.products);
+
+    //console.log(new Date().toLocaleString());
+    const updatedOrder = await this.orderModel
+      .findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            products: order.products,
+            totalPrice,
+            updatedAt: new Date().toLocaleString(),
+          },
+        },
+        { new: true },
+      )
+      .populate('customer')
+      .populate({
+        path: 'products',
+        model: Product.name,
+      });
+
+    return updatedOrder;
   }
 }
