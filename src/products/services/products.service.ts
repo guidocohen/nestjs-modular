@@ -12,41 +12,49 @@ import {
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(Product.name) private readonly productModel: Model<Product>,
   ) {}
 
   async findAll(params?: FilterProductsDto) {
-    if (params) {
-      const filters: FilterQuery<Product> = {};
-      const { limit = 10, offset = 0 } = params;
+    try {
+      if (params) {
+        const filters: FilterQuery<Product> = {};
+        const { limit = 10, offset = 0 } = params;
 
-      const { minPrice, maxPrice } = params;
-      if (minPrice && maxPrice && minPrice > maxPrice) {
-        throw new Error('minPrice must be less than or equal to maxPrice');
+        const { minPrice, maxPrice } = params;
+        if (minPrice && maxPrice && minPrice > maxPrice) {
+          throw new Error('minPrice must be less than or equal to maxPrice');
+        }
+        if (minPrice) filters.price.$gte = minPrice;
+        if (maxPrice) filters.price.$lte = maxPrice;
+
+        // TODO: Add date filters
+
+        const products = await this.productModel
+          .find(filters)
+          .populate('brand')
+          .skip(offset)
+          .limit(limit)
+          .exec();
+        const filteredCount = products.length;
+        const totalProducts = await this.productModel.countDocuments().exec();
+        return { products, filteredCount, totalProducts };
       }
-      filters.price = {
-        ...(minPrice ? { $gte: minPrice } : {}),
-        ...(maxPrice ? { $lte: maxPrice } : {}),
-      };
-
-      // TODO: Add date filters
-
-      const products = await this.productModel
-        .find(filters)
-        .skip(offset)
-        .limit(limit)
-        .exec();
-      const filteredCount = products.length;
+      const products = await this.productModel.find().populate('brands').exec();
       const totalProducts = await this.productModel.countDocuments().exec();
-      return { products, filteredCount, totalProducts };
+      return { products, totalProducts };
+    } catch (error) {
+      console.error(error);
+      return error;
     }
-    const products = await this.productModel.find().exec();
-    const totalProducts = await this.productModel.countDocuments().exec();
-    return { products, totalProducts };
+  }
+
+  async findByIds(products: string[]) {
+    return await this.productModel.find({ _id: { $in: products } }).exec();
   }
 
   async findOne(id: string) {
-    const product = await this.productModel.findById(id).exec();
+    const product = await this.productModel.findById(id).populate('brand');
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
     }

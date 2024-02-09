@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema() // TODO: Agregar { timestamps: true }) y agregar campos createdAt y updatedAt
 export class Brand extends Document {
-  @Prop({ required: true, type: String })
+  @Prop({ required: true, unique: true, type: String })
   name: string;
   @Prop({ type: String })
   image: string;

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Brand } from './brand.entity';
 
 @Schema() // TODO: Agregar { timestamps: true }) y agregar campos createdAt y updatedAt
 export class Product extends Document {
@@ -18,6 +19,7 @@ export class Product extends Document {
   @Prop({ type: String })
   image: string;
 
+  // category is a subdocument (embedded document)
   @Prop(
     raw({
       name: { type: String },
@@ -25,6 +27,10 @@ export class Product extends Document {
     }),
   )
   category: Record<string, any>;
+
+  // brand is a reference to another document
+  @Prop({ type: Types.ObjectId, ref: Brand.name })
+  brand: Brand | Types.ObjectId;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

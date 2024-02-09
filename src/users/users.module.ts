@@ -12,6 +12,7 @@ import { OrdersService } from './services/orders.service';
 import { Order, OrderSchema } from './entities/order.entity';
 
 import { ProductsModule } from './../products/products.module';
+import { ProductsService } from 'src/products/services/products.service';
 
 @Module({
   imports: [

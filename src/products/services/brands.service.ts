@@ -22,8 +22,17 @@ export class BrandsService {
   }
 
   async create(data: CreateBrandDto) {
-    const newBrand = await this.brandModel.create(data);
-    return newBrand;
+    try {
+      const brand = await this.brandModel.findOne({ name: data.name }).exec();
+      if (brand) {
+        throw new Error(`Brand ${data.name} already exists`);
+      }
+      const newBrand = await this.brandModel.create(data);
+      return newBrand;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
+    }
   }
 
   async update(id: string, changes: UpdateBrandDto) {
