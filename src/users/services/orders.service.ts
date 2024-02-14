@@ -9,9 +9,8 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Order } from '../entities/order.entity';
 import { CreateOrderDto, UpdateOrderDto } from '../dtos/order.dto';
-import { Product } from 'src/products/entities/product.entity';
-import { ProductsService } from 'src/products/services/products.service';
-const locales = 'es-AR';
+import { Product } from '../../products/entities/product.entity';
+import { ProductsService } from '../../products/services/products.service';
 
 @Injectable()
 export class OrdersService {
@@ -62,12 +61,11 @@ export class OrdersService {
     });
     return newOrder;
   }
-
   async update(id: string, changes: UpdateOrderDto) {
     const updatedOrder = await this.orderModel
       .findByIdAndUpdate(
         id,
-        { $set: { ...changes, updatedAt: new Date().toLocaleTimeString() } },
+        { $set: { ...changes, updatedAt: new Date().toLocaleString() } },
         { new: true },
       )
       .populate('customer')
@@ -149,7 +147,7 @@ export class OrdersService {
           $set: {
             products: order.products,
             totalPrice,
-            updatedAt: new Date().toLocaleTimeString(),
+            updatedAt: new Date().toLocaleString(),
           },
         },
         { new: true },
@@ -181,7 +179,6 @@ export class OrdersService {
     order.products.pull(productId);
     const totalPrice = await this.calculateTotalPrice(order.products);
 
-    //console.log(new Date().toLocaleString());
     const updatedOrder = await this.orderModel
       .findByIdAndUpdate(
         orderId,

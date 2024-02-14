@@ -7,9 +7,10 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { HttpModule } from '@nestjs/axios';
-import { enviroments } from 'environments';
+import { enviroments } from '../environments';
 import { env } from 'process';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 import config from './config';
 
 @Module({
@@ -37,6 +38,7 @@ import config from './config';
     ProductsModule,
     HttpModule,
     DatabaseModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
