@@ -12,7 +12,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './../dtos/category.dto';
-import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
 
 @ApiTags('categories')
 @Controller('categories')

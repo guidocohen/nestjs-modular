@@ -13,14 +13,6 @@ export class CreateOrderDto {
   @IsMongoId()
   readonly customer: string;
 
-  @IsDate()
-  @IsOptional()
-  readonly createdAt: Date;
-
-  @IsDate()
-  @IsOptional()
-  readonly updatedAt: Date;
-
   @IsArray()
   @IsNotEmpty()
   readonly products: string[];

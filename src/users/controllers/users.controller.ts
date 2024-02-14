@@ -7,11 +7,11 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-
 import { ApiTags } from '@nestjs/swagger';
+
 import { UsersService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
-import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
 
 @ApiTags('users')
 @Controller('users')
@@ -26,6 +26,11 @@ export class UsersController {
   @Get(':id')
   get(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+  @Get('email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.usersService.findByEmail(email);
   }
 
   @Get(':id/orders')

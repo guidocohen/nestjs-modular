@@ -2,16 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 import { Customer } from './customer.entity';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
+import { transformSchema } from '../../common/transform-schema/transform-schema';
 
-@Schema()
+@Schema({ timestamps: true, toJSON: { transform: transformSchema } })
 export class Order extends Document {
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
-
-  @Prop({ type: Date, default: Date.now })
-  updatedAt: Date;
-
   // customer is a reference to another document
   @Prop({ type: Types.ObjectId, ref: Customer.name, required: true })
   customer: Customer | Types.ObjectId;

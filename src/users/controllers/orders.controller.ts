@@ -15,7 +15,7 @@ import {
   CreateOrderDto,
   UpdateOrderDto,
 } from '../dtos/order.dto';
-import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
 
 @ApiTags('orders')
 @Controller('orders')

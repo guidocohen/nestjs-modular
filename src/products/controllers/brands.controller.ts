@@ -11,7 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { BrandsService } from '../services/brands.service';
 import { CreateBrandDto, UpdateBrandDto } from '../dtos/brand.dto';
-import { MongoIdPipe } from 'src/common/mongo-id/mongo-id.pipe';
+import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
 
 @ApiTags('brands')
 @Controller('brands')

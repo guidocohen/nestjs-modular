@@ -56,18 +56,13 @@ export class OrdersService {
     const newOrder = await this.orderModel.create({
       ...data,
       totalPrice,
-      createdAt: new Date(new Date().toLocaleString()),
-      updatedAt: new Date(new Date().toLocaleString()),
     });
     return newOrder;
   }
+
   async update(id: string, changes: UpdateOrderDto) {
     const updatedOrder = await this.orderModel
-      .findByIdAndUpdate(
-        id,
-        { $set: { ...changes, updatedAt: new Date().toLocaleString() } },
-        { new: true },
-      )
+      .findByIdAndUpdate(id, { $set: { ...changes } }, { new: true })
       .populate('customer')
       .populate({
         path: 'products',
@@ -80,7 +75,6 @@ export class OrdersService {
   }
 
   // TODO: Validate if products exists & implement quantity
-  // TODO: Validate TimeZone
   async addProducts(orderId: string, productIds: string[]) {
     const order = await this.orderModel.findById(orderId);
     if (!order) {
@@ -100,7 +94,6 @@ export class OrdersService {
           $set: {
             products,
             totalPrice,
-            updatedAt: new Date().toLocaleString(),
           },
         },
         { new: true },
@@ -147,7 +140,6 @@ export class OrdersService {
           $set: {
             products: order.products,
             totalPrice,
-            updatedAt: new Date().toLocaleString(),
           },
         },
         { new: true },
@@ -170,7 +162,6 @@ export class OrdersService {
     return true;
   }
 
-  // TODO: Validate TimeZone
   async removeProduct(orderId: string, productId: string) {
     const order = await this.orderModel.findById(orderId);
     if (!order) {
@@ -186,7 +177,6 @@ export class OrdersService {
           $set: {
             products: order.products,
             totalPrice,
-            updatedAt: new Date().toLocaleString(),
           },
         },
         { new: true },

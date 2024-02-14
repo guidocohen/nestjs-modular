@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Brand } from './brand.entity';
+import { transformSchema } from '../../common/transform-schema/transform-schema';
 
-@Schema() // TODO: Agregar { timestamps: true }) y agregar campos createdAt y updatedAt
+@Schema({ timestamps: true, toJSON: { transform: transformSchema } })
 export class Product extends Document {
   @Prop({ type: String, required: true })
   name: string;
