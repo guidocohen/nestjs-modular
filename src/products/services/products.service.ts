@@ -62,7 +62,7 @@ export class ProductsService {
   }
 
   async create(data: CreateProductDto) {
-    const newProduct = await this.productModel.create(data);
+    const newProduct = (await this.productModel.create(data)).populate('brand');
     return newProduct;
   }
 

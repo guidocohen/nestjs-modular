@@ -29,6 +29,8 @@ import config from './config';
         MONGO_HOST: Joi.string().required(),
         MONGO_CONNECTION: Joi.string().required(),
         API_KEY: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRES_IN: Joi.string().required(),
       }),
       validationOptions: {
         abortEarly: true,
