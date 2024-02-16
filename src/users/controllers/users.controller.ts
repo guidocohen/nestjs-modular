@@ -6,16 +6,13 @@ import {
   Body,
   Put,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
