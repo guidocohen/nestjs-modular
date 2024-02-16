@@ -13,7 +13,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './../dtos/category.dto';
 import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
-import { JwtAuthGuard } from '../../auth/guards/jwt.auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('categories')

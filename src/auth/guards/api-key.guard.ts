@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { ConfigType } from '@nestjs/config';
 
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { IS_PUBLIC } from '../decorators/public.decorator';
 import config from './../../config';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ApiKeyGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
+      IS_PUBLIC,
       context.getHandler(),
     );
     if (isPublic) return true;
