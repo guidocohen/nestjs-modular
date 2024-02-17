@@ -11,11 +11,15 @@ import { Order } from '../entities/order.entity';
 import { CreateOrderDto, UpdateOrderDto } from '../dtos/order.dto';
 import { Product } from '../../products/entities/product.entity';
 import { ProductsService } from '../../products/services/products.service';
+import { Customer } from '../entities/customer.entity';
+import { UsersService } from './users.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private readonly orderModel: Model<Order>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly userService: UsersService,
     @Inject(forwardRef(() => ProductsService))
     private readonly productService: ProductsService,
   ) {}
@@ -39,6 +43,13 @@ export class OrdersService {
       throw new NotFoundException(`Order #${id} not found`);
     }
     return order;
+  }
+
+  async ordersByCustomer(customerId: string) {
+    return await this.orderModel.find({ customer: customerId }).populate({
+      path: 'products',
+      model: Product.name,
+    });
   }
 
   async calculateTotalPrice(stringProducts) {

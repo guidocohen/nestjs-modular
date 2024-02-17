@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,10 +11,15 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from '../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { OrdersService } from './orders.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @Inject(forwardRef(() => OrdersService))
+    private ordersService: OrdersService,
+  ) {}
 
   async findAll() {
     return await this.userModel.find();
@@ -60,11 +67,12 @@ export class UsersService {
   }
 
   async getOrdersByUser(id: string) {
-    const user = await this.userModel.findById(id).populate('orders').exec();
+    const user = (await this.userModel.findById(id)).toJSON();
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
-    return user;
+
+    return await this.ordersService.ordersByCustomer(user.customer.toString());
   }
 
   async findByEmail(email: string) {

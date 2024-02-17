@@ -12,6 +12,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { CustomersService } from '../services/customers.service';
 import { CreateCustomerDto, UpdateCustomerDto } from '../dtos/customer.dto';
 import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/models/roles.model';
 
 @ApiTags('customers')
 @Controller('customers')

@@ -8,9 +8,7 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  Res,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -21,10 +19,10 @@ import {
 } from '../dtos/products.dto';
 import { ProductsService } from './../services/products.service';
 import { MongoIdPipe } from '../../common/mongo-id/mongo-id.pipe';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../auth/models/roles.model';
 
-// @UseGuards(AuthGuard('jwt'))
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
@@ -44,6 +42,7 @@ export class ProductsController {
     return this.productsService.findOne(productId);
   }
 
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() payload: CreateProductDto) {
     return this.productsService.create(payload);

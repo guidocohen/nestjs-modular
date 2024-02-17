@@ -4,12 +4,14 @@ import { Request } from 'express';
 
 import { AuthService } from '../services/auth.service';
 import { User } from '../../users/entities/user.entity';
-import { LoginDto } from '../dtos/login.dto';
+import { Public } from '../decorators/public.decorator';
+// import { LoginDto } from '../dtos/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Req() req: Request) {
