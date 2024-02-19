@@ -28,7 +28,6 @@ import { RolesGuard } from './auth/guards/roles.guard';
         MONGO_INITDB_ROOT_USERNAME: Joi.string().required(),
         MONGO_INITDB_ROOT_PASSWORD: Joi.string().required(),
         MONGO_DB: Joi.string().required(),
-        MONGO_PORT: Joi.number().default(8090),
         MONGO_HOST: Joi.string().required(),
         MONGO_CONNECTION: Joi.string().required(),
         API_KEY: Joi.string().required(),
